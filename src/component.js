@@ -13,8 +13,12 @@ async function renderTemplate(ref, relativePathToTemplate) {
 
 function defineComponent(tagName, templatePath) {
     class CustomComponent extends HTMLElement {
+        constructor() {
+            super();
+            this.shadow = this.attachShadow({ mode: 'open' });
+        }
         connectedCallback() {
-            renderTemplate(this, templatePath);
+            renderTemplate(this.shadow, templatePath);
         }
     }
     customElements.define(tagName, CustomComponent);
