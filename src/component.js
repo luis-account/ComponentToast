@@ -1,4 +1,4 @@
-async function renderTemplate(ref, relativePathToTemplate, relativePathToStylesheet, attributes) {
+async function renderTemplate(ref, relativePathToTemplate, relativePathToStylesheet, attributes, id) {
     try {
         const [templateResponse, styleResponse] = await Promise.all([
             fetch(relativePathToTemplate),
@@ -19,19 +19,24 @@ async function renderTemplate(ref, relativePathToTemplate, relativePathToStylesh
             ? `<style>${styleContent}</style>${templateContent}`
             : templateContent;
 
-        injectAndExecuteScripts(ref, attributes);
+        injectAndExecuteScripts(ref, attributes, id);
     } catch (error) {
         console.error('Error rendering template:', error);
     }
 }
 
-function injectAndExecuteScripts(ref, attributes) {
+function injectAndExecuteScripts(ref, attributes, id) {
     ref.querySelectorAll("script").forEach((oldScript) => {
         const newScript = document.createElement("script");
-        newScript.textContent = `
+        newScript.type = oldScript.type || "text/javascript";
+
+        const scriptContent = `
+            const component = document.getElementById('${id}').shadowRoot;
             const attributes = ${JSON.stringify(attributes)};
             ${oldScript.textContent}
         `;
+
+        newScript.textContent = scriptContent;
         ref.appendChild(newScript);
         oldScript.remove();
     });
@@ -42,13 +47,14 @@ function defineComponent(tagName, templatePath, stylesheetPath) {
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: 'open' });
+            this.id = `${Math.random().toString(36).substring(2, 15)}`;
         }
 
         async connectedCallback() {
             const attributes = Object.fromEntries(
                 this.getAttributeNames().map(name => [name, this.parseAttribute(this.getAttribute(name))])
             );
-            await renderTemplate(this.shadow, templatePath, stylesheetPath, attributes);
+            await renderTemplate(this.shadow, templatePath, stylesheetPath, attributes, this.id);
         }
 
         parseAttribute(value) {
