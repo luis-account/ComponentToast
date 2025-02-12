@@ -1,42 +1,59 @@
+const templateCache = new Map();
+const styleCache = new Map();
+
 async function renderTemplate(ref, relativePathToTemplate, relativePathToStylesheet, attributes, id) {
-    try {
-        const [templateResponse, styleResponse] = await Promise.all([
-            fetch(relativePathToTemplate),
-            relativePathToStylesheet ? fetch(relativePathToStylesheet) : null
-        ]);
+    const templateContent = await getTemplateContent(relativePathToTemplate);
+    const styleContent = await getStylesheetContent(relativePathToStylesheet);
 
-        if (!templateResponse.ok) {
-            throw new Error(`Failed to fetch template (${templateResponse.status}): ${relativePathToTemplate}`);
-        }
-        if (styleResponse && !styleResponse.ok) {
-            throw new Error(`Failed to fetch stylesheet (${styleResponse.status}): ${relativePathToStylesheet}`);
-        }
-
-        const templateContent = await templateResponse.text();
-        const styleContent = styleResponse && styleResponse.ok ? await styleResponse.text() : '';
-
-        ref.innerHTML = relativePathToStylesheet
+    ref.innerHTML = relativePathToStylesheet
             ? `<style>${styleContent}</style>${templateContent}`
             : templateContent;
 
-        injectAndExecuteScripts(ref, attributes, id);
-    } catch (error) {
-        console.error('Error rendering template:', error);
+    injectAndExecuteScripts(ref, attributes, id);
+}
+
+async function getTemplateContent(relativePath) {
+    let templateContent = '';
+    if (templateCache.has(relativePath)) {
+        templateContent = templateCache.get(relativePath);
+    } else {
+        templateContent = await fetchTextFromPath(relativePath);
+        templateCache.set(relativePath, templateContent);
     }
+    return templateContent;
+}
+
+async function getStylesheetContent(relativePath) {
+    let styleContent = '';
+    if (relativePath) {
+        if (styleCache.has(relativePath)) {
+            styleContent = styleCache.get(relativePath);
+        } else {
+            styleContent = await fetchTextFromPath(relativePath);
+            styleCache.set(relativePath, styleContent);
+        }
+    }
+    return styleContent;
+}
+
+async function fetchTextFromPath(relativePath) {
+    const response = await fetch(relativePath);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch text (${response.status}): ${relativePath}`);
+    }
+    return response.text();
 }
 
 function injectAndExecuteScripts(ref, attributes, id) {
     ref.querySelectorAll("script").forEach((oldScript) => {
         const newScript = document.createElement("script");
         newScript.type = oldScript.type || "text/javascript";
-
-        const scriptContent = `
+        newScript.textContent = `
             const component = document.getElementById('${id}').shadowRoot;
             const attributes = ${JSON.stringify(attributes)};
             ${oldScript.textContent}
         `;
 
-        newScript.textContent = scriptContent;
         ref.appendChild(newScript);
         oldScript.remove();
     });
@@ -55,6 +72,10 @@ function defineComponent(tagName, templatePath, stylesheetPath) {
                 this.getAttributeNames().map(name => [name, this.parseAttribute(this.getAttribute(name))])
             );
             await renderTemplate(this.shadow, templatePath, stylesheetPath, attributes, this.id);
+        }
+
+        disconnectedCallback() {
+            this.shadow.remove();
         }
 
         parseAttribute(value) {
