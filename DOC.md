@@ -1,9 +1,10 @@
+# Component Toast
 ## Preface
 I didn’t start this project with the goal of creating the next big JavaScript framework. Instead, I wanted to understand why modern web frameworks like Angular and React are so complex.
 My primary goal is to encapsulate HTML, CSS, and JavaScript within reusable components, thereby promoting more maintainable code. This is a direct use case for my [portfolio website](https://bluevoid.ch) bluevoid.ch where I am already using this framework right now.
 
 ## From HTML templates to Web Components
-I was surprised to discover that web components are actually a web standard, built into modern browsers[MDN][https://developer.mozilla.org/en-US/docs/Web/API/Web_components]. I had previously assumed they were a feature introduced by specific web frameworks.
+I was surprised to discover that web components are actually a web standard, built into modern browsers [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_components). I had previously assumed they were a feature introduced by specific web frameworks.
 
 A very bare bone approach to create a web component is demonstrated in the following example:
 ```javascript
@@ -223,7 +224,7 @@ For this I created a simple Node.js script that uses a config file called `toast
 ```
 
 The `toast-recipe.json` configuration file would look like this:
-```json
+```javascript
 {
     "directoryPath": "./components",
     "outputFilePath": "./toast.js",
