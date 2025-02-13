@@ -1,3 +1,5 @@
+[README](https://github.com/luis-account/ComponentToast/blob/main/README.md)
+
 # Component Toast
 ## Preface
 I didn’t start this project with the goal of creating the next big JavaScript framework. Instead, I wanted to understand why modern web frameworks like Angular and React are so complex.
@@ -236,3 +238,5 @@ This configuration specifies the directory containing the components, the path t
 ## Conclusion
 And just like that the core functionality of my component framework is complete.
 This project helped me gain a deeper understanding of Web Components and browser-native APIs. While it started as an experiment, it has already proven useful for my portfolio website and offers a lightweight alternative to modern frameworks for structuring reusable UI components.
+
+[README](https://github.com/luis-account/ComponentToast/blob/main/README.md)
