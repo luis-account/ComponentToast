@@ -2,7 +2,7 @@
 Light and crispy — just pop your elements into components and watch them toast to perfection.
 Component Toast is a lightweight JavaScript framework that enables developers to create reusable web components with HTML, CSS, and JavaScript. It leverages Web Components and the Shadow DOM to provide encapsulated, modular UI components without external dependencies.
 
-[More Documentation](https://github.com/luis-account/component-toast/DOC.md)
+[More Documentation](https://github.com/luis-account/ComponentToast/blob/main/DOC.md)
 
 ## Features
 - **Web Component-based**: Uses native browser APIs for performance and simplicity.
@@ -112,6 +112,6 @@ The framework converts:
 - `"123"` → `123`
 - Other values remain strings.
 
-[More Documentation](https://github.com/luis-account/component-toast/DOC.md)
+[More Documentation](https://github.com/luis-account/ComponentToast/blob/main/DOC.md)
 
 
